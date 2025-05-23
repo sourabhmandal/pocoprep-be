@@ -1,0 +1,17 @@
+.DS_Store
+.env
+node_modules
+package-lock.json
+yarn-error.log
+.vscode
+.idea
+*.iml
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.egg-info
+*.egg
