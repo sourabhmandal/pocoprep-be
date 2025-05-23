@@ -1,11 +1,11 @@
 from django.urls import path
 
-from . import views
+from .views import GeminiChatAPIView
 
 urlpatterns = [
     # POST - generate a new roadmap
-    path('', views.chat_with_gemini, name='generate_roadmap'),
-    
+    path('', GeminiChatAPIView.as_view(), name='gemini-chat'),
+
     # # GET - view all roadmaps metadata
     # path('', views.view_roadmaps, name='view_roadmaps'),
     

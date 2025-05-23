@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'roadmap',
+    'rest_framework',
+    'roadmap.apps.RoadmapConfig',
 ]
 
 MIDDLEWARE = [
