@@ -52,6 +52,71 @@ def get_summarization_chain(temperature: float = 0.3):
     ])
     return prompt | llm | StrOutputParser()
 
+
+
+
+def get_domain_expert_chain(temperature: float = 0.3, designation: str = "Senior Software Engineering", topic: str = "Golang", yoe: str = "3 years", timeframe: str = "1 month"):
+
+    llm_manager = LLMManager()
+    llm = llm_manager.get_llm(model="gemini-2.0-flash", temperature=temperature)
+
+    example_output = """topics:
+  - name: Programming Languages
+    importance: 5
+    subtopics:
+      - Python
+      - JavaScript
+      - Java
+      - C++
+      - Go
+      - Rust
+
+  - name: Web Development
+    importance: 4
+    subtopics:
+      - Frontend Frameworks
+      - Backend Frameworks
+      - Databases
+      - API Design
+      - Deployment
+
+  - name: Data Science
+    importance: 1
+    subtopics:
+      - Machine Learning
+      - Deep Learning
+      - Data Visualization
+      - Statistical Analysis
+      - Big Data Technologies
+
+  - name: Cloud Computing
+    importance: 2
+    subtopics:
+      - AWS
+      - Azure
+      - Google Cloud Platform
+      - Serverless Computing
+      - Containers
+
+  - name: Cybersecurity
+    importance: 3
+    subtopics:
+      - Network Security
+      - Application Security
+      - Cryptography
+      - Ethical Hacking
+      - Incident Response"""
+
+
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", """Act as a mentor for {designation} experienced in {topic} and have taken many {topic} interviews.""".format(designation=designation, topic=topic)),
+        ("system", """generate a yaml file structure for the given topic and subtopics. in a similar yaml file 
+        format like this example, {example_output}""".format(example_output=example_output)),
+        ("system", "All your generated roadmaps should be in yaml format following strict structure as mentioned in the example."),
+        ("user", "{input}")
+    ])
+    return prompt | llm | StrOutputParser()
+
 __all__ = [
     'LLMManager',
     'get_general_chat_chain',
