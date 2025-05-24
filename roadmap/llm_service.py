@@ -1,4 +1,5 @@
 import os
+import json
 from django.conf import settings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -56,66 +57,83 @@ def get_summarization_chain(temperature: float = 0.3):
 
 
 def get_domain_expert_chain(temperature: float = 0.3, designation: str = "Senior Software Engineering", topic: str = "Golang", yoe: str = "3 years", timeframe: str = "1 month"):
+  llm_manager = LLMManager()
+  llm = llm_manager.get_llm(model="gemini-2.0-flash", temperature=temperature)
 
-    llm_manager = LLMManager()
-    llm = llm_manager.get_llm(model="gemini-2.0-flash", temperature=temperature)
+  example_output = """{{
+  "roadmap_data": {{
+    "interviewer": "Senior Software Engineer",
+    "topic": "Python Backend Development",
+    "llm_response": "The full text of the LLM's response goes here...",
+    "topics": [
+      {{
+        "title": "Programming Languages",
+        "importance_score": 5.0,
+        "subtopics": [
+          {{"title": "Python"}},
+          {{"title": "JavaScript"}},
+          {{"title": "Java"}},
+          {{"title": "C++"}},
+          {{"title": "Go"}},
+          {{"title": "Rust"}}
+        ]
+      }},
+      {{
+        "title": "Web Development",
+        "importance_score": 4.0,
+        "subtopics": [
+          {{"title": "Frontend Frameworks"}},
+          {{"title": "Backend Frameworks"}},
+          {{"title": "Databases"}},
+          {{"title": "API Design"}},
+          {{"title": "Deployment"}}
+        ]
+      }},
+      {{
+        "title": "Data Science",
+        "importance_score": 1.0,
+        "subtopics": [
+          {{"title": "Machine Learning"}},
+          {{"title": "Deep Learning"}},
+          {{"title": "Data Visualization"}},
+          {{"title": "Statistical Analysis"}},
+          {{"title": "Big Data Technologies"}}
+        ]
+      }},
+      {{
+        "title": "Cloud Computing",
+        "importance_score": 2.0,
+        "subtopics": [
+          {{"title": "AWS"}},
+          {{"title": "Azure"}},
+          {{"title": "Google Cloud Platform"}},
+          {{"title": "Serverless Computing"}},
+          {{"title": "Containers"}}
+        ]
+      }},
+      {{
+        "title": "Cybersecurity",
+        "importance_score": 3.0,
+        "subtopics": [
+          {{"title": "Network Security"}},
+          {{"title": "Application Security"}},
+          {{"title": "Cryptography"}},
+          {{"title": "Ethical Hacking"}},
+          {{"title": "Incident Response"}}
+        ]
+      }}
+    ]
+  }}
+}}"""
 
-    example_output = """topics:
-  - name: Programming Languages
-    importance: 5
-    subtopics:
-      - Python
-      - JavaScript
-      - Java
-      - C++
-      - Go
-      - Rust
-
-  - name: Web Development
-    importance: 4
-    subtopics:
-      - Frontend Frameworks
-      - Backend Frameworks
-      - Databases
-      - API Design
-      - Deployment
-
-  - name: Data Science
-    importance: 1
-    subtopics:
-      - Machine Learning
-      - Deep Learning
-      - Data Visualization
-      - Statistical Analysis
-      - Big Data Technologies
-
-  - name: Cloud Computing
-    importance: 2
-    subtopics:
-      - AWS
-      - Azure
-      - Google Cloud Platform
-      - Serverless Computing
-      - Containers
-
-  - name: Cybersecurity
-    importance: 3
-    subtopics:
-      - Network Security
-      - Application Security
-      - Cryptography
-      - Ethical Hacking
-      - Incident Response"""
-
-
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", """Act as a mentor for {designation} experienced in {topic} and have taken many {topic} interviews.""".format(designation=designation, topic=topic)),
-        ("system", """generate a yaml file structure for the given topic and subtopics. in a similar yaml file 
-        format like this example, {example_output}""".format(example_output=example_output)),
-        ("system", "All your generated roadmaps should be in yaml format following strict structure as mentioned in the example."),
-        ("user", "{input}")
-    ])
-    return prompt | llm | StrOutputParser()
+  prompt = ChatPromptTemplate.from_messages([
+      ("system", f"""Act as a mentor for {designation} experienced in {topic} and have taken many {topic} interviews."""), # Use f-string here
+      ("system", f"""generate a json file structure for the given topic and subtopics. in a strict json 
+      format like this example: {json.dumps(example_output, indent=2)}"""), # THIS IS THE CRITICAL LINE
+      ("system", "All your generated roadmaps should be in json format following strict structure as mentioned in the example."),
+      ("user", "{input}")
+  ])
+  return prompt | llm | StrOutputParser()
 
 __all__ = [
     'LLMManager',
