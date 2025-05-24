@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RoadmapListAPIView, RoadmapDetailAPIView, CreateRoadmapAPIView
+from .views import RoadmapListAPIView, RoadmapDetailAPIView, CreateRoadmapAPIView, ChatMessageListView, ChatCreateAPIView
 
 urlpatterns = [
     # POST - generate a new roadmap
@@ -14,8 +14,9 @@ urlpatterns = [
 
     
     # GET - view a specific discussion (chat)
-    # path('discuss/<int:chat_id>', views.generate_roadmap, name='generate_roadmap'),
-    
+    path('discuss/<int:subtopic_id>/', ChatMessageListView.as_view(), name='subtopic_chat_list'),
+    path('discuss', ChatCreateAPIView.as_view(), name='chat_create'), # New URL for creating chat messages
+
     # POST - create a new discussion (chat)
     # path('discuss/', views.generate_roadmap, name='generate_roadmap'),
     

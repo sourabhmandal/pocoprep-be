@@ -3,10 +3,11 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import generics
-from .models import Roadmap
-from .serializers import RoadmapSerializer, RoadmapListSerializer
-from .llm_service import get_domain_expert_chain
+from .models import Roadmap, ChatMessage, Subtopic
+from .serializers import RoadmapSerializer, RoadmapListSerializer, ChatMessageSerializer
+from .llm_service import get_domain_expert_chain, get_topic_tutor_chain
 from .json_service import extract_and_parse_json_from_llm_response, serialize_json_to_db_models
+from django.shortcuts import get_object_or_404
 
 class RoadmapListAPIView(generics.ListAPIView):
     """
@@ -25,6 +26,77 @@ class RoadmapDetailAPIView(generics.RetrieveAPIView):
     serializer_class = RoadmapSerializer
     # The 'pk' in the URL will map to the 'id' field of the Roadmap model by default.
     lookup_field = 'pk' # This is the default, but explicitly setting it is good practice
+
+class ChatMessageListView(generics.ListAPIView):
+    """
+    API view to retrieve a list of chat messages for a specific subtopic.
+    Requires a 'subtopic_id' in the URL path.
+    """
+    serializer_class = ChatMessageSerializer
+
+    def get_queryset(self):
+        """
+        Filters the queryset to return only chat messages
+        related to the subtopic specified in the URL.
+        """
+        subtopic_id = self.kwargs.get('subtopic_id') # Get subtopic_id from URL kwargs
+
+        if not subtopic_id:
+            # This case should ideally be caught by URL routing, but good for safety
+            return ChatMessage.objects.none()
+
+        # Ensure the subtopic exists
+        # get_object_or_404 will raise Http404 if not found, which DRF handles as 404 response
+        subtopic = get_object_or_404(Subtopic, pk=subtopic_id)
+
+        # Filter chat messages by the subtopic and order them by timestamp
+        queryset = ChatMessage.objects.filter(subtopic=subtopic).order_by('timestamp')
+        return queryset
+
+class ChatCreateAPIView(APIView):
+    """
+    API view to create a new chat message (user's input) and
+    then generate and save an LLM response for that subtopic,
+    using the LangChain utility.
+    """
+    serializer_class = ChatMessageSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        subtopic_id = serializer.validated_data['subtopic'].id
+        user_message_text = serializer.validated_data['user_message']
+
+        try:
+            subtopic = Subtopic.objects.get(id=subtopic_id)
+        except Subtopic.DoesNotExist:
+            return Response({"error": "Subtopic not found."}, status=status.HTTP_404_NOT_FOUND)
+                
+        past_messages_for_llm = []
+        for msg in ChatMessage.objects.filter(subtopic=subtopic).order_by('timestamp'):
+            past_messages_for_llm.append(msg.user_message)
+            past_messages_for_llm.append(msg.llm_response)
+
+        llm_response_text = "Sorry, I couldn't get a response from the LLM."
+        try:
+            chat_chain = get_topic_tutor_chain(
+                topic=subtopic.title,
+                past_messages=past_messages_for_llm
+            )
+            llm_response_text = chat_chain.invoke({"input": user_message_text})
+        except Exception as e:
+            llm_response_text = f"Error communicating with LLM: {e}"
+
+        llm_chat_message = ChatMessage.objects.create(
+            subtopic=subtopic,
+            user_message=user_message_text,
+            llm_response=llm_response_text,
+        )
+
+        llm_serializer = self.serializer_class(llm_chat_message)
+        return Response(llm_serializer.data, status=status.HTTP_201_CREATED)
+
 
 class CreateRoadmapAPIView(APIView):
     """
