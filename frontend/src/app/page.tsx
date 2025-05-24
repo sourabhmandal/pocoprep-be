@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="max-w-screen-lg mx-auto">
       <h1 className="text-center m-4 text-4xl font-extrabold uppercase">
-        Pocket Interview
+        Pocket Prep
       </h1>
       <Dialog>
         <DialogTrigger asChild>
