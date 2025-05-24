@@ -77,3 +77,16 @@ class RoadmapSerializer(serializers.ModelSerializer):
     #     # For simplicity, often nested updates are handled by deleting and recreating
     #     # or by custom logic to identify changes.
     #     pass
+
+class RoadmapListSerializer(serializers.ModelSerializer):
+    """
+    A lightweight serializer for listing Roadmap instances,
+    returning only a subset of fields.
+    """
+    class Meta:
+        model = Roadmap
+        # Specify ONLY the fields you want to include in the list response
+        fields = ['id', 'topic', 'interviewer', 'created_at']
+        # You could also explicitly exclude fields:
+        # exclude = ['llm_response'] # This would include all fields except llm_response
+

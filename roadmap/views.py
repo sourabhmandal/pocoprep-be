@@ -2,25 +2,35 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .llm_service import get_domain_expert_chain # Assuming your chain initialization is here
-from .json_service import extract_and_parse_json_from_llm_response, serialize_json_to_db_models # Assuming this function is defined in yaml_service.py
+from rest_framework import generics
+from .models import Roadmap
+from .serializers import RoadmapSerializer, RoadmapListSerializer
+from .llm_service import get_domain_expert_chain
+from .json_service import extract_and_parse_json_from_llm_response, serialize_json_to_db_models
 
+class RoadmapListAPIView(generics.ListAPIView):
+    """
+    API view to list all Roadmap instances.
+    GET /roadmap/all
+    """
+    queryset = Roadmap.objects.all()
+    serializer_class = RoadmapListSerializer
 
-class GeminiChatAPIView(APIView):
+class RoadmapDetailAPIView(generics.RetrieveAPIView):
+    """
+    API view to retrieve a single Roadmap instance by ID.
+    GET /api/roadmaps/<int:pk>/
+    """
+    queryset = Roadmap.objects.all()
+    serializer_class = RoadmapSerializer
+    # The 'pk' in the URL will map to the 'id' field of the Roadmap model by default.
+    lookup_field = 'pk' # This is the default, but explicitly setting it is good practice
+
+class CreateRoadmapAPIView(APIView):
     """
     Handles chat interactions with the Gemini 2.0 Flash model using LangChain.
     Accepts POST requests with a 'message' and returns the AI's response.
     """
-
-    def get(self, request, *args, **kwargs):
-        """
-        Handles GET requests, providing an informational message.
-        """
-        return Response(
-            {'message': 'Please send a POST request with a "message" field to interact with the Gemini chatbot.'},
-            status=status.HTTP_200_OK
-        )
-
     def post(self, request, *args, **kwargs):
         """
         Handles POST requests for chat interaction.
