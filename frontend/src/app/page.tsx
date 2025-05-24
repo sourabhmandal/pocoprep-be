@@ -1,5 +1,8 @@
 import { ChatList } from "@/components/ChatList";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { CreateRoadmap } from "@/components/CreateRoadmap";
 
 export default function Home() {
   return (
@@ -7,6 +10,12 @@ export default function Home() {
       <h1 className="text-center m-4 text-4xl font-extrabold uppercase">
         Pocket Interview
       </h1>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="default" className="w-full">Create New Roadmap</Button>
+        </DialogTrigger>
+        <CreateRoadmap />
+      </Dialog>
       <Separator />
 
       <main className="w-full">
