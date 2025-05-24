@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Accordion,
@@ -7,13 +7,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { ChatTerminal } from "@/components/ChatTerminal";
 
+interface InterviewPreparationSubTopic {
+  id: number
+  title: string
+}
 interface InterviewPreparationTopic {
+  id: number
   title: string
   importance_score: number
-  subtopics: Array<{
-    title: string
-  }>
+  subtopics: Array<InterviewPreparationSubTopic>
 }
 
 interface InterviewPreparation {
@@ -29,7 +33,7 @@ interface InterviewPreparation {
 export default function Home({ params }: { params: Promise<{ id: string }> }) {
   const [roadmap, setRoadmap] = useState<InterviewPreparation>({} as InterviewPreparation);
   const [selectedTopic, setSelectedTopic] = useState<InterviewPreparationTopic>({} as InterviewPreparationTopic);
-  const [selectedSubTopic, setSelectedSubTopic] = useState<string>('');
+  const [selectedSubTopic, setSelectedSubTopic] = useState<InterviewPreparationSubTopic>({} as InterviewPreparationSubTopic);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +55,7 @@ export default function Home({ params }: { params: Promise<{ id: string }> }) {
         const data: InterviewPreparation = await response.json();
         setRoadmap(data);
         setSelectedTopic(data.topics[0]);
-        setSelectedSubTopic(data.topics[0].subtopics[0].title);
+        setSelectedSubTopic(data.topics[0].subtopics[0]);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
@@ -98,7 +102,7 @@ export default function Home({ params }: { params: Promise<{ id: string }> }) {
                       className="text-sm w-full flex justify-between text-blue-500 hover:underline"
                       variant={"ghost"}
                       onClick={() => {
-                        setSelectedSubTopic(subtopic.title);
+                        setSelectedSubTopic(subtopic);
                         setSelectedTopic(topic);
                       }}
                     >
@@ -111,7 +115,8 @@ export default function Home({ params }: { params: Promise<{ id: string }> }) {
             </Accordion>}
         </div>
         <div className="w-2/3 h-full rounded-lg bg-slate-100 overflow-auto">
-          {loading ? <div>Loading Topics...</div> : <h1 className="text-md font-bold p-4 bg-slate-300">{selectedSubTopic?.length > 100 ? selectedSubTopic?.substring(0, 100) + '...' : selectedSubTopic}</h1>}
+          {loading ? <div>Loading Topics...</div> : <h1 className="text-md font-bold p-4 bg-slate-300">{selectedSubTopic?.title && selectedSubTopic?.title.length > 100 ? selectedSubTopic.title.substring(0, 100) + '...' : selectedSubTopic?.title}</h1>}
+          <ChatTerminal subTopic={selectedSubTopic} />
         </div>
       </main>
     </div>

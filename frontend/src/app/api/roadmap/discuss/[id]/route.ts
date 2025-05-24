@@ -1,21 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { NextResponse } from 'next/server';
 
-interface InterviewPreparation {
-    id: number
-    interviewer: string
-    topic: string
-    llm_response: string
-    created_at: string
-    topics: Array<{
-        title: string
-        importance_score: number
-        subtopics: Array<{
-            id: number
-            title: string
-        }>
-    }>
+interface Chat {
+  id: number
+  subtopic: number
+  user_message: string
+  llm_response: string
+  timestamp: string
 }
+type ChatArray = Chat[];
 
 interface ErrorResponse {
     error: string;
@@ -27,7 +20,7 @@ export async function GET(request: NextApiRequest, { params }: { params: Promise
     if (!id) {
         return NextResponse.json({ error: 'ID parameter is required' }, { status: 400 });
     }
-    const backendUrl = `${process.env.BACKEND_BASE_URL}/roadmap/${id}`;
+    const backendUrl = `${process.env.BACKEND_BASE_URL}/roadmap/discuss/${id}`;
 
     try {
         const backendResponse = await fetch(backendUrl);
@@ -46,7 +39,7 @@ export async function GET(request: NextApiRequest, { params }: { params: Promise
             );
         }
 
-        const data: InterviewPreparation = await backendResponse.json();
+        const data: ChatArray = await backendResponse.json();
 
         return NextResponse.json(data, {
             status: 200,
