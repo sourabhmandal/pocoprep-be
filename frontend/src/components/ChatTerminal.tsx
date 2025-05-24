@@ -133,7 +133,7 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
           chatList.map((chat) => (
             <div key={chat.id} className="mb-4"> {/* Added margin-bottom for spacing */}
               <div className="flex justify-end mb-2"> {/* User message on the right */}
-                <div className="bg-blue-500 text-white p-3 rounded-lg max-w-md break-words">
+                <div className="bg-blue-500 text-white p-3 rounded-lg break-words">
                   <div className="text-md">
                     <ReactMarkdown>{chat.user_message}</ReactMarkdown>
                   </div>
@@ -141,7 +141,7 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
                 </div>
               </div>
               <div className="flex justify-start"> {/* LLM response on the left */}
-                <div className="bg-gray-200 p-3 rounded-lg max-w-md break-words">
+                <div className="bg-gray-200 p-3 rounded-lg break-words">
                   <div className="text-md">
                     <ReactMarkdown>{chat.llm_response}</ReactMarkdown></div>
                   <div className="text-xs text-gray-600 mt-1">{new Date(chat.timestamp).toLocaleString()}</div>
