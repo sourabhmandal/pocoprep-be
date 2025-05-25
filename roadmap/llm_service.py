@@ -181,8 +181,6 @@ def get_topic_tutor_chain(
     # Add the placeholder for the current user input
     messages.append(HumanMessagePromptTemplate.from_template("{input}"))
 
-    print(f"Messages for topic tutor chain: {messages}")
-
     prompt = ChatPromptTemplate.from_messages(messages)
     return prompt | llm | StrOutputParser()
 

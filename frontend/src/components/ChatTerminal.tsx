@@ -74,20 +74,23 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
     }
 
     setIsSending(true);
-    setError(null); // Clear previous errors
+    setError(null);
+
+    // Temporary message with placeholder LLM response
+    const tempId = Date.now();
+    const newUserMessage: Chat = {
+      id: tempId,
+      subtopic: subTopic.id,
+      user_message: currentMessage,
+      llm_response: "", // Start empty, we'll stream content here
+      timestamp: new Date().toISOString(),
+    };
+
+    // Optimistically add user message with empty LLM response
+    setChatList(prev => [...prev, newUserMessage]);
+    setCurrentMessage(""); // Clear input
 
     try {
-      // Optimistically add the user's message to the chat list
-      const newUserMessage: Chat = {
-        id: Date.now(), // Temporary ID
-        subtopic: subTopic.id,
-        user_message: currentMessage,
-        llm_response: "Thinking...", // Placeholder for LLM response
-        timestamp: new Date().toISOString(),
-      };
-      setChatList(prevChats => [...prevChats, newUserMessage]);
-      setCurrentMessage(""); // Clear the input field
-
       const response = await fetch(`/api/roadmap/discuss`, {
         method: "POST",
         headers: {
@@ -103,14 +106,31 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
         throw new Error(`Failed to send message: ${response.statusText}`);
       }
 
-      const responseData: Chat = await response.json();
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+      let streamedResponse = "";
 
-      // Replace the placeholder or add the new complete chat entry
-      setChatList(prevChats =>
-        prevChats.map(chat =>
-          chat.id === newUserMessage.id ? responseData : chat
-        )
-      );
+      if (!reader) throw new Error("ReadableStream not supported");
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        done = doneReading;
+        if (value) {
+          const chunk = decoder.decode(value);
+          streamedResponse += chunk;
+
+          // Update the chatList with streamed content for this message
+          setChatList(prevChats =>
+            prevChats.map(chat =>
+              chat.id === tempId
+                ? { ...chat, llm_response: streamedResponse }
+                : chat
+            )
+          );
+        }
+      }
 
     } catch (err) {
       if (err instanceof Error) {
@@ -118,9 +138,8 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
       } else {
         setError("An unknown error occurred while sending message.");
       }
-      // Revert optimistic update if sending failed
-      // setChatList(prevChats => prevChats.filter(chat => chat.id !== newUserMessage.id));
-
+      // Optionally revert optimistic update on error:
+      // setChatList(prev => prev.filter(chat => chat.id !== tempId));
     } finally {
       setIsSending(false);
     }
@@ -145,13 +164,13 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
             <div key={chat.id} className="mb-4"> {/* Added margin-bottom for spacing */}
               <div className="flex justify-end mb-2"> {/* User message on the right */}
                 <div className="bg-blue-500 text-white p-3 rounded-lg break-words">
-                  <div className="text-md" dangerouslySetInnerHTML={{__html : marked.use(markedCodePreview()).parse(chat.user_message)}} />
+                  <div className="text-md" dangerouslySetInnerHTML={{ __html: marked.use(markedCodePreview()).parse(chat.user_message) }} />
                   <div className="text-xs text-gray-300 mt-1 text-right">{new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
               </div>
               <div className="flex justify-start"> {/* LLM response on the left */}
                 <div className="bg-gray-200 p-3 rounded-lg break-words">
-                  <div className="text-md" dangerouslySetInnerHTML={{__html : marked.use(markedCodePreview()).parse(chat.llm_response)}} />
+                  <div className="text-md" dangerouslySetInnerHTML={{ __html: marked.use(markedCodePreview()).parse(chat.llm_response) }} />
                   <div className="text-xs text-gray-600 mt-1">{new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
               </div>

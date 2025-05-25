@@ -1,6 +1,7 @@
 # api/views.py (assuming your chat logic is in the 'api' app)
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import StreamingHttpResponse
 from rest_framework import status
 from rest_framework import generics
 from .models import Roadmap, ChatMessage, Subtopic
@@ -54,11 +55,6 @@ class ChatMessageListView(generics.ListAPIView):
         return queryset
 
 class ChatCreateAPIView(APIView):
-    """
-    API view to create a new chat message (user's input) and
-    then generate and save an LLM response for that subtopic,
-    using the LangChain utility.
-    """
     serializer_class = ChatMessageSerializer
 
     def post(self, request, *args, **kwargs):
@@ -72,30 +68,43 @@ class ChatCreateAPIView(APIView):
             subtopic = Subtopic.objects.get(id=subtopic_id)
         except Subtopic.DoesNotExist:
             return Response({"error": "Subtopic not found."}, status=status.HTTP_404_NOT_FOUND)
-                
+
         past_messages_for_llm = []
         for msg in ChatMessage.objects.filter(subtopic=subtopic).order_by('timestamp'):
             past_messages_for_llm.append(msg.user_message)
             past_messages_for_llm.append(msg.llm_response)
 
-        llm_response_text = "Sorry, I couldn't get a response from the LLM."
-        try:
-            chat_chain = get_topic_tutor_chain(
-                topic=subtopic.title,
-                past_messages=past_messages_for_llm
+        def token_stream():
+            nonlocal user_message_text, subtopic, past_messages_for_llm
+            full_llm_response = ""
+            try:
+                chat_chain = get_topic_tutor_chain(
+                    topic=subtopic.title,
+                    past_messages=past_messages_for_llm
+                )
+
+                for chunk in chat_chain.stream({"input": user_message_text}):
+                    token = chunk.content if hasattr(chunk, "content") else str(chunk)
+                    if token and token.strip():
+                        full_llm_response += token
+                        yield token
+
+            except Exception as e:
+                error_msg = f"[Error communicating with LLM: {str(e)}]"
+                full_llm_response = "-- Error occurred while processing your request --"
+                yield f"data: {error_msg}\n\n"
+
+            # After streaming, save the full response to the DB
+            ChatMessage.objects.create(
+                subtopic=subtopic,
+                user_message=user_message_text,
+                llm_response=full_llm_response,
             )
-            llm_response_text = chat_chain.invoke({"input": user_message_text})
-        except Exception as e:
-            llm_response_text = f"Error communicating with LLM: {e}"
 
-        llm_chat_message = ChatMessage.objects.create(
-            subtopic=subtopic,
-            user_message=user_message_text,
-            llm_response=llm_response_text,
+        return StreamingHttpResponse(
+            streaming_content=token_stream(),
+            content_type="text/event-stream"
         )
-
-        llm_serializer = self.serializer_class(llm_chat_message)
-        return Response(llm_serializer.data, status=status.HTTP_201_CREATED)
 
 
 class CreateRoadmapAPIView(APIView):

@@ -1,49 +1,60 @@
-import { NextRequest, NextResponse } from 'next/server';
-
-interface Chat {
-  id: number
-  subtopic: number
-  user_message: string
-  llm_response: string
-  timestamp: string
-}
+import { NextRequest } from 'next/server';
 
 export async function POST(req: NextRequest) {
   const { user_message, subtopic } = await req.json();
-  if (!user_message) {
-    return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
-  }
-  if (!subtopic) {
-    return NextResponse.json({ error: 'Subtopic ID is required.' }, { status: 400 });
+
+  if (!user_message || !subtopic) {
+    return new Response(
+      JSON.stringify({ error: 'user_message and subtopic are required.' }),
+      { status: 400, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
-  const backendUrl = `${process.env.BACKEND_BASE_URL}/roadmap/discuss`; // Your backend endpoint
+  const backendUrl = `${process.env.BACKEND_BASE_URL}/roadmap/discuss`;
 
   try {
     const backendResponse = await fetch(backendUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Crucial to specify content type for JSON body
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ user_message: user_message, subtopic: subtopic }), // Stringify the JSON body for the backend
+      body: JSON.stringify({ user_message, subtopic }),
     });
 
-    if (!backendResponse.ok) {
-      const errorData = await backendResponse.json().catch(() => ({})); // Try to parse error response
-      const errorMessage = errorData.error || `Backend error: ${backendResponse.statusText || 'Failed to fetch data from backend'}`;
-      return NextResponse.json(
-        { error: errorMessage },
-        { status: backendResponse.status }
-      );
-    }
+    if (!backendResponse.ok || !backendResponse.body) {
+      const errorData = await backendResponse.text();
+      return new Response(errorData || 'Backend error', {
+        status: backendResponse.status,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } 
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        const reader = backendResponse.body!.getReader();
+        const decoder = new TextDecoder();
 
-    const data: Chat = await backendResponse.json();
-    return NextResponse.json(data, { status: backendResponse.status });
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          controller.enqueue(decoder.decode(value));
+        }
+
+        controller.close();
+      },
+    });
+
+    return new Response(readableStream, {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    });
   } catch (error) {
-    console.error('Error in API route:', error); // Log the actual error for debugging
-    return NextResponse.json(
-      { error: 'Internal Server Error: Could not process request.' },
-      { status: 500 }
+    console.error('Streaming error:', error);
+    return new Response(
+      JSON.stringify({ error: 'Internal Server Error while streaming.' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 }
