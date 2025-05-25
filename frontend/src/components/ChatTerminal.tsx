@@ -1,8 +1,9 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import ReactMarkdown from "react-markdown";
+import { Marked } from 'marked';
+import markedCodePreview from 'marked-code-preview';
 
 
 interface Chat {
@@ -25,6 +26,16 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
   const [error, setError] = useState<string | null>(null);
   const [currentMessage, setCurrentMessage] = useState<string>(""); // State for the textarea input
   const [isSending, setIsSending] = useState<boolean>(false); // State for sending message
+  const marked = new Marked();
+
+  useEffect(() => {
+    marked.setOptions({
+      gfm: true,
+      breaks: false,
+      pedantic: false,
+    });
+  }, [marked]);
+
 
   useEffect(() => {
     if (!subTopic || !subTopic.id) return;
@@ -134,16 +145,13 @@ export function ChatTerminal({ subTopic }: { subTopic: InterviewPreparationSubTo
             <div key={chat.id} className="mb-4"> {/* Added margin-bottom for spacing */}
               <div className="flex justify-end mb-2"> {/* User message on the right */}
                 <div className="bg-blue-500 text-white p-3 rounded-lg break-words">
-                  <div className="text-md">
-                    <ReactMarkdown>{chat.user_message}</ReactMarkdown>
-                  </div>
+                  <div className="text-md" dangerouslySetInnerHTML={{__html : marked.use(markedCodePreview()).parse(chat.user_message)}} />
                   <div className="text-xs text-gray-300 mt-1 text-right">{new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
               </div>
               <div className="flex justify-start"> {/* LLM response on the left */}
                 <div className="bg-gray-200 p-3 rounded-lg break-words">
-                  <div className="text-md">
-                    <ReactMarkdown>{chat.llm_response}</ReactMarkdown></div>
+                  <div className="text-md" dangerouslySetInnerHTML={{__html : marked.use(markedCodePreview()).parse(chat.llm_response)}} />
                   <div className="text-xs text-gray-600 mt-1">{new Date(chat.timestamp).toLocaleString()}</div>
                 </div>
               </div>
