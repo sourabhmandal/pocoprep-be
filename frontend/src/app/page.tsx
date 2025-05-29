@@ -13,9 +13,9 @@ import { ChatInput } from "@/components/chat-input"
 
 export default function HomePage() {
   return (
-    <SidebarProvider className="dark:bg-black bg-white/80 h-[100vh] overflow-hidden">
-      <AppSidebar className="dark:bg-black bg-white/80" />
-      <SidebarInset className="dark:bg-muted/50 bg-white">
+    <SidebarProvider className="h-[100vh] overflow-hidden">
+      <AppSidebar className="bg-sidebar" />
+      <SidebarInset className="">
         <header className="flex h-12 shrink-0 items-center gap-2">
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
@@ -29,14 +29,14 @@ export default function HomePage() {
 
         {/* Main content and chat input wrapper */}
         <div className="flex flex-col overflow-hidden rounded-t-lg">
-          <div className="flex flex-col  h-full">
+          <div className="flex flex-col h-full">
             {/* Messages area */}
             <div className="flex-1 overflow-y-auto p-4">
               <ChatHistory className="max-w-3xl mx-auto" />
             </div>
             {/* Chat Input at bottom */}
             <div className="border-8 rounded-t-lg border-b-0 w-full max-w-3xl mx-auto">
-              <ChatInput className=""/>
+              <ChatInput />
             </div>
           </div>
         </div>
