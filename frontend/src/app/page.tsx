@@ -83,6 +83,11 @@ export default function Home() {
                 onChange={(e) => {
                   setInput(e.target.value)
                   setInputRows(e.target.value.split("\n").length)
+                  if (e.target.value.startsWith("/")) {
+                  const command = e.target.value.split(" ")[0].substring(1); // get command without '/'
+                    console.log("Detected command:", command);
+                    // You can now open a command palette, suggestions list, or handle it
+                  }
                 }}
                 placeholder="Type your message..."
                 onFocus={() => setInputRows(1)}

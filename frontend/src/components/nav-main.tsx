@@ -37,7 +37,7 @@ export function NavMain({
     <SidebarGroup>
             <SidebarGroupLabel>Favourites</SidebarGroupLabel>
 
-      <SidebarGroupLabel>History</SidebarGroupLabel>
+      <SidebarGroupLabel>Roadmap</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>

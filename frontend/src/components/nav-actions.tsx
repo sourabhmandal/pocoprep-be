@@ -35,6 +35,16 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { ModeToggle } from "./mode-toggle"
+import { CommandDialog } from "./command-dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog"
 
 const data = [
   [
@@ -108,14 +118,19 @@ export function NavActions() {
 
   return (
     <div className="flex items-center gap-2 text-sm">
-      <div className="hidden text-xs my-auto text-muted-foreground md:inline-block">
-        Edit Oct 08
-      </div>
       <Button variant="ghost" size="icon" className="h-7 w-7">
         <Star />
       </Button>
       <ModeToggle />
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog>
+        <DialogTrigger>
+          <Button variant="ghost" size="icon" className="h-7 w-7">
+            <Settings2 />
+          </Button>
+        </DialogTrigger>
+        <CommandDialog />
+      </Dialog>
+      {/* <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -149,7 +164,7 @@ export function NavActions() {
             </SidebarContent>
           </Sidebar>
         </PopoverContent>
-      </Popover>
+      </Popover> */}
     </div>
   )
 }
