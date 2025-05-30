@@ -5,7 +5,7 @@ from django.http import StreamingHttpResponse
 from rest_framework import status
 from rest_framework import generics
 from .models import Roadmap, ChatMessage, Subtopic
-from .serializers import RoadmapSerializer, RoadmapListSerializer, ChatMessageSerializer
+from .serializers import RoadmapSerializer, RoadmapListSerializer, ChatMessageSerializer, LatestTenMessagesPagination
 from .llm_service import get_domain_expert_chain, get_topic_tutor_chain
 from .json_service import extract_and_parse_json_from_llm_response, serialize_json_to_db_models
 from django.shortcuts import get_object_or_404
@@ -30,28 +30,21 @@ class RoadmapDetailAPIView(generics.RetrieveAPIView):
 
 class ChatMessageListView(generics.ListAPIView):
     """
-    API view to retrieve a list of chat messages for a specific subtopic.
+    API view to retrieve a paginated list of chat messages for a specific subtopic.
     Requires a 'subtopic_id' in the URL path.
     """
     serializer_class = ChatMessageSerializer
+    pagination_class = LatestTenMessagesPagination  # 👈 added this
 
     def get_queryset(self):
-        """
-        Filters the queryset to return only chat messages
-        related to the subtopic specified in the URL.
-        """
-        subtopic_id = self.kwargs.get('subtopic_id') # Get subtopic_id from URL kwargs
+        subtopic_id = self.kwargs.get('subtopic_id')
 
         if not subtopic_id:
-            # This case should ideally be caught by URL routing, but good for safety
             return ChatMessage.objects.none()
 
-        # Ensure the subtopic exists
-        # get_object_or_404 will raise Http404 if not found, which DRF handles as 404 response
         subtopic = get_object_or_404(Subtopic, pk=subtopic_id)
 
-        # Filter chat messages by the subtopic and order them by timestamp
-        queryset = ChatMessage.objects.filter(subtopic=subtopic).order_by('timestamp')
+        queryset = ChatMessage.objects.filter(subtopic=subtopic).order_by('-timestamp')  # latest first
         return queryset
 
 class ChatCreateAPIView(APIView):
