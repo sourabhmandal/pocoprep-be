@@ -7,14 +7,13 @@ import {
   SidebarInset,
   SidebarProvider,
 } from "@/components/ui/sidebar"
-import { ChatHistory } from "@/components/chat-history";
-import { ChatInput } from "@/components/chat-input"
 import { ChatHeader } from "@/components/chat-header";
-import { RoadmapDetailDataProvider } from "@/context/RoadmapDetail";
 import { ChatContent } from "@/components/chat-content";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export default function HomePage() {
   return (
+    <ErrorBoundary>
     <RoadmapListDataProvider>
       <SidebarProvider className="h-[100vh] overflow-hidden">
         <AppSidebar className="bg-sidebar" />
@@ -32,6 +31,6 @@ export default function HomePage() {
         </SidebarInset>
       </SidebarProvider>
     </RoadmapListDataProvider>
-
+</ErrorBoundary>
   )
 }

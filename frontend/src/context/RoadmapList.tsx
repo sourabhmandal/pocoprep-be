@@ -1,5 +1,6 @@
 'use client'
 
+import { apiFetcher } from '@/lib/api/fetcher';
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 
@@ -16,7 +17,6 @@ type ApiDataContextType = {
   roadmaps: InterviewPreparationArray
   selectedRoadmap: InterviewPreparation | undefined
   loading: boolean
-  error: string | null
 }
 
 const ApiDataContext = createContext<ApiDataContextType | undefined>(undefined)
@@ -25,29 +25,21 @@ export const RoadmapListDataProvider = ({ children }: { children: React.ReactNod
   const [selectedRoadmap, setSelectedRoadmap] = useState<InterviewPreparation>();
   const [roadmaps, setRoadmaps] = useState<any>(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const res = await fetch("/api/roadmap/all");
-        if (!res.ok) throw new Error('Failed to fetch')
-        const json = await res.json()
-        setRoadmaps(json)
-        if (json.length > 0) setSelectedRoadmap(json[0]);
-
-      } catch (err: any) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
+      setLoading(true)
+      const json = await apiFetcher<InterviewPreparationArray>("/api/roadmap/all");
+      setRoadmaps(json)
+      if (json.length > 0) setSelectedRoadmap(json[0]);
+      setLoading(false)
     }
 
     fetchData()
   }, [])
 
   return (
-    <ApiDataContext.Provider value={{ roadmaps, selectedRoadmap, loading, error }}>
+    <ApiDataContext.Provider value={{ roadmaps, selectedRoadmap, loading }}>
       {children}
     </ApiDataContext.Provider>
   )

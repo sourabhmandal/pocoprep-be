@@ -1,5 +1,6 @@
 'use client'
 
+import { apiFetcher } from '@/lib/api/fetcher'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 
 
@@ -43,9 +44,7 @@ export const RoadmapDetailDataProvider = ({ children, id }: { children: React.Re
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/roadmap/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch')
-        const json: InterviewPreparation = await res.json();
+        const json: InterviewPreparation = await apiFetcher<InterviewPreparation>(`/api/roadmap/${id}`);
         setRoadmap(json)
         setSelectedSubtopic(json.topics[0]?.subtopics[0] || null)
       } catch (err: any) {
