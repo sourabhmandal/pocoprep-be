@@ -9,19 +9,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { useRoadmapListApiData } from "@/context/RoadmapList";
-
-
+import { useFetchRoadmapList } from "@/hook/api/useRoadmapApi";
+import { useRoadmapStore } from "@/hook/store/useRoadmapStore";
+import { toast } from "sonner";
 
 export function NavMain() {
-  const { roadmaps, selectedRoadmap, loading, error } = useRoadmapListApiData()
 
-  if (loading) {
+  const { isLoading, error } = useFetchRoadmapList()
+  const roadmaps = useRoadmapStore((state) => state.roadmaps)
+
+  if (error) return <p>Failed to load roadmaps.</p>
+
+  if (isLoading) {
     return <div>Loading roadmaps...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    toast.error(error)
+    return <div>Failed to load roadmaps</div>;
   }
 
   return (

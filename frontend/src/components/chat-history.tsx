@@ -1,4 +1,3 @@
-import { RoadmapDetailDataProvider, useRoadmapDetailApiData } from "@/context/RoadmapDetail";
 import { Marked } from 'marked';
 import { useEffect } from "react";
 import markedCodePreview from 'marked-code-preview';
@@ -8,7 +7,6 @@ interface ChatHistoryProps {
     className?: string;
 }
 export function ChatHistory({ className }: ChatHistoryProps) {
-    const { selectedSubtopic } = useRoadmapDetailApiData();
     const marked = new Marked();
 
     useEffect(() => {

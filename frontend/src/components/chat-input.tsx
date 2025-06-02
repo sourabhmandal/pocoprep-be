@@ -13,14 +13,16 @@ import { PaperclipIcon } from "lucide-react"
 
 import { useState } from "react"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { useRoadmapDetailApiData } from "@/context/RoadmapDetail";
+import { useFetchRoadmapDetail } from "@/hook/api/useRoadmapApi";
+import { useRoadmapStore } from "@/hook/store/useRoadmapStore";
 
 
 export function ChatInput({ className = "" }: { className?: string }) {
   const [input, setInput] = useState("");
   const sendMessage = () => { };
   const [inputRows, setInputRows] = useState(1);
-  const { roadmap } = useRoadmapDetailApiData();
+  const { isLoading, error } = useFetchRoadmapDetail(2)
+  const roadmapDetails = useRoadmapStore((state) => state.roadmapDetails)
 
   return (
     <div className={className}>
@@ -49,8 +51,8 @@ export function ChatInput({ className = "" }: { className?: string }) {
               Roadmap <ChevronDownIcon className="h-4 w-4" />
             </PopoverTrigger>
             <PopoverContent className="w-96 p-0 px-2 rounded-lg shadow-lg overflow-y-auto" side="top" align="start">
-              <Accordion type="single" collapsible className="w-full">  {/* defaultValue={`topic-${roadmap?.topics[0].id}-${1}`} */}
-                {roadmap?.topics.map((topic, index) => (
+              {/* <Accordion type="single" collapsible className="w-full" defaultValue={`topic-${roadmap?.topics[0].id}-${1}`}>
+                {roadmapDetails?.topics.map((topic, index) => (
                   <AccordionItem value={`topic-${topic.id}-${index + 1}`} key={topic.id}>
                     <AccordionTrigger>{topic.title}</AccordionTrigger>
                     <AccordionContent>
@@ -61,7 +63,7 @@ export function ChatInput({ className = "" }: { className?: string }) {
                     </AccordionContent>
                   </AccordionItem>
                 ))}
-              </Accordion>
+              </Accordion> */}
             </PopoverContent>
           </Popover>
 

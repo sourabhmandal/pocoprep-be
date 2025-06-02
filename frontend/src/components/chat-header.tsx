@@ -3,12 +3,11 @@ import { Separator } from "@/components/ui/separator"
 import {
     SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { useRoadmapListApiData } from "@/context/RoadmapList"
+import { useRoadmapStore } from "@/hook/store/useRoadmapStore"
 
 
 export function ChatHeader() {
-      const { selectedRoadmap } = useRoadmapListApiData();
-
+  const selectedRoadmap = useRoadmapStore((state) => state.selectedRoadmap)
     return (
         <header className="flex h-12 shrink-0 items-center gap-2">
             <div className="flex items-center gap-2 px-4">
