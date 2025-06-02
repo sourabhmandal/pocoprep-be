@@ -25,7 +25,7 @@ export function ChatHistory({ className }: ChatHistoryProps) {
                 <></>
             ))} */}
 
-                <div className="max-w-2xl bg-white/10 p-4 rounded-lg">
+                <div className="max-w-2xl p-4 rounded-lg dark:bg-white/10 bg-black/10">
                     Explain me python memory management in detail.
                 </div>
 
