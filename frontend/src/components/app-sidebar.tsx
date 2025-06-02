@@ -25,6 +25,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { AppSwitcher } from "@/components/AppSwitcher"
 
 const data = {
   user: {
@@ -32,26 +33,29 @@ const data = {
     email: "m@example.com",
     avatar: "/avatars/shadcn.jpg",
   },
+  apps: [
+    {name: "Interview Preparation", logo: Bot, plan: "Free"},
+    {name: "Resume Builder", logo: Frame, plan: "Pro"},
+    {name: "Mock Interviews", logo: Send, plan: "Pro"},
+    {name: "Career Coaching", logo: LifeBuoy, plan: "Pro"},
+    {name: "Job Search", logo: Map, plan: "Free"},
+    {name: "Analytics", logo: PieChart, plan: "Pro"},
+    {name: "Settings", logo: Settings2, plan: "Free"},
+  ]
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-      <Sidebar variant="inset" {...props}>
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem className="flex items-center justify-between">
-              <SidebarMenuButton size="lg" asChild>
-                <Link href="/" className="ml-2 text-sm font-semibold">POCO PREP</Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <NavMain />
-        </SidebarContent>
-        <SidebarFooter>
-          <NavUser user={data.user} />
-        </SidebarFooter>
-      </Sidebar>
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader>
+        <AppSwitcher teams={data.apps} />
+      </SidebarHeader>
+      <SidebarContent>
+        <NavMain />
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+    </Sidebar>
   )
 }

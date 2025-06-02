@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react";
-import toast from "react-hot-toast"
+import { toast } from "sonner"
 
 export function CreateRoadmap() {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export function CreateRoadmap() {
     designation: "",
     topic: "",
     yoe: "",
-    timeframe: "1 month",
+    timeframe: "",
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,71 +49,71 @@ export function CreateRoadmap() {
       },
       body: JSON.stringify(formState),
     })
-    .then(response => response.json())
-    .then(data => {
-      if(data.error) {
-        toast.error(data.error);
-        return;
-      }
-      toast.success('Successfully toasted!')
-    }).then(() => {
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      toast.error('An error occurred while submitting the form.');
-      setLoading(false);
-    }).finally(() => {
-      setFormState({
-      designation: "",
-      topic: "",
-      yoe: "",
-      timeframe: "1 month",
-    });
-    });
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          toast.error(data.error);
+          return;
+        }
+        toast.success('Successfully toasted!')
+      }).then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast.error('An error occurred while submitting the form.');
+        setLoading(false);
+      }).finally(() => {
+        setFormState({
+          designation: "",
+          topic: "",
+          yoe: "",
+          timeframe: "1 month",
+        });
+      });
     console.log("Form submitted with data:", formState);
     // Reset form state after submission
-      
+
     // You can use a state to control the dialog visibility
   };
   return (
-    
-      <DialogContent className="sm:max-w-[800px]">
-        <DialogHeader>
-          <DialogTitle>Add Details</DialogTitle>
-          <DialogDescription>
-            Please provide the required details for your roadmap.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="designation" className="text-right">
-              Designation
-            </Label>
-            <Input id="designation" value={formState.designation} placeholder={placeholder.designation} className="col-span-3" onChange={handleInputChange} />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="topic" className="text-right">
-              Topics to cover
-            </Label>
-            <Input id="topic" value={formState.topic} placeholder={placeholder.topic} className="col-span-3" onChange={handleInputChange} />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="yoe" className="text-right">
-              Your Year of Experience
-            </Label>
-            <Input id="yoe" value={formState.yoe} placeholder={placeholder.yoe} className="col-span-3" onChange={handleInputChange} />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="timeframe" className="text-right">
-              Timeframe
-            </Label>
-            <Input id="timeframe" value={formState.timeframe} placeholder={placeholder.timeframe} className="col-span-3" onChange={handleInputChange} />
-          </div>
+
+    <DialogContent className="sm:max-w-[800px]">
+      <DialogHeader>
+        <DialogTitle>Lets Start Preparing</DialogTitle>
+        <DialogDescription>
+          Provide the required details for generating custom roadmap for you.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="designation" className="text-right">
+            Designation
+          </Label>
+          <Input id="designation" value={formState.designation} placeholder={placeholder.designation} className="col-span-3" onChange={handleInputChange} />
         </div>
-        <DialogFooter>
-          <Button className="w-full" onClick={handleSubmit} disabled={loading}>{loading ? "..." : "Create Roadmap"}</Button>
-        </DialogFooter>
-      </DialogContent>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="topic" className="text-right">
+            Topics to cover
+          </Label>
+          <Input id="topic" value={formState.topic} placeholder={placeholder.topic} className="col-span-3" onChange={handleInputChange} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="yoe" className="text-right">
+            Your Year of Experience
+          </Label>
+          <Input id="yoe" value={formState.yoe} placeholder={placeholder.yoe} className="col-span-3" onChange={handleInputChange} />
+        </div>
+        <div className="grid grid-cols-4 items-center gap-4">
+          <Label htmlFor="timeframe" className="text-right">
+            Timeframe
+          </Label>
+          <Input id="timeframe" value={formState.timeframe} placeholder={placeholder.timeframe} className="col-span-3" onChange={handleInputChange} />
+        </div>
+      </div>
+      <DialogFooter>
+        <Button className="w-full" onClick={handleSubmit} disabled={loading}>{loading ? "..." : "Create Roadmap"}</Button>
+      </DialogFooter>
+    </DialogContent>
   )
 }

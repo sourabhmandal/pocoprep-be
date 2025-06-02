@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, CommandIcon, type LucideIcon } from "lucide-react"
+import { ChevronRight, CommandIcon, PlusIcon, type LucideIcon } from "lucide-react"
 
 import {
   SidebarGroup,
@@ -12,6 +12,9 @@ import {
 import { useFetchRoadmapList } from "@/hook/api/useRoadmapApi";
 import { useRoadmapStore } from "@/hook/store/useRoadmapStore";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { CreateRoadmap } from "@/components/CreateRoadmap";
 
 export function NavMain() {
 
@@ -30,22 +33,30 @@ export function NavMain() {
   }
 
   return (
-      <SidebarGroup>
-        <SidebarGroupLabel>Favourites</SidebarGroupLabel>
+    <SidebarGroup>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button size="icon" className="w-full">
+            <PlusIcon /> Add New
+          </Button>
+        </DialogTrigger>
+        <CreateRoadmap />
+      </Dialog>
+      <SidebarGroupLabel>Pinned</SidebarGroupLabel>
 
-        <SidebarGroupLabel>Roadmap</SidebarGroupLabel>
-        <SidebarMenu>
-          {roadmaps.map((item) => (
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip={item.topic}>
-                <a href={item.topic.toLowerCase().replace(/\s+/g, "-")}>
-                  <CommandIcon />
-                  <span>{item.topic}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroup>
+      <SidebarGroupLabel>Roadmap</SidebarGroupLabel>
+      <SidebarMenu>
+        {roadmaps.map((item) => (
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip={item.topic}>
+              <a href={item.topic.toLowerCase().replace(/\s+/g, "-")}>
+                <CommandIcon />
+                <span>{item.topic}</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
   )
 }
