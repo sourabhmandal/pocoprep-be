@@ -15,6 +15,12 @@ const fetchRoadmapList = async () => {
   return res.json()
 }
 
+const fetchChatHistoryList = async (id: number) => {
+  const res = await fetch(`/api/roadmap/discuss/${id}`)
+  if (!res.ok) throw new Error('Failed to fetch roadmap')
+  return res.json()
+}
+
 export const useFetchRoadmapList = () => {
   const setRoadmapList = useRoadmapStore((state) => state.setRoadmapList)
     const setSelectedRoadmap = useRoadmapStore((state) => state.setSelectedRoadmap)
@@ -35,7 +41,7 @@ export const useFetchRoadmapDetail = (id: number) => {
   const setRoadmapDetail = useRoadmapStore((state) => state.setRoadmapDetail)
 
   const response = useQuery({
-    queryKey: ['roadmap', id],
+    queryKey: ['roadmap-by-id', id],
     queryFn: () => fetchRoadmapDetails(id),
   })
   if (response.isSuccess && response.data) {
@@ -44,3 +50,17 @@ export const useFetchRoadmapDetail = (id: number) => {
   return response
 }
 
+
+export const useFetchChatHistoryList = (id: number) => {
+  const setChatHistory = useRoadmapStore((state) => state.setChatHistory)
+
+  const response = useQuery({
+    queryKey: ['roadmap-chat-history', id],
+    queryFn: () => fetchChatHistoryList(id),
+  })
+
+  if (response.isSuccess && response.data) {
+    setChatHistory(response.data)
+  }
+  return response
+}

@@ -130,7 +130,7 @@ export function NavActions() {
         </DialogTrigger>
         <CommandDialog />
       </Dialog>
-      {/* <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -164,7 +164,7 @@ export function NavActions() {
             </SidebarContent>
           </Sidebar>
         </PopoverContent>
-      </Popover> */}
+      </Popover>
     </div>
   )
 }

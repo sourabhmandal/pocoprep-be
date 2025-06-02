@@ -1,76 +1,49 @@
+"use client"
 import { Marked } from 'marked';
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import markedCodePreview from 'marked-code-preview';
+import { useRoadmapStore } from '@/hook/store/useRoadmapStore';
+import { useFetchChatHistoryList } from '@/hook/api/useRoadmapApi';
 
 
 interface ChatHistoryProps {
     className?: string;
 }
 export function ChatHistory({ className }: ChatHistoryProps) {
-    const marked = new Marked();
-
-    useEffect(() => {
-        marked.use({
+    const marked = useMemo(() => {
+        const instance = new Marked();
+        instance.use({
             pedantic: false,
             gfm: true,
             breaks: false
         });
+        instance.use(markedCodePreview()); // Apply the extension here
+        return instance;
+    }, []);
+    const { error, isLoading } = useFetchChatHistoryList(3);
+    const chatHistory = useRoadmapStore((state) => state.chatHistory)
 
-    }, [marked]);
+    if (isLoading) {
+        return <div className="text-gray-500">Loading chat history...</div>;
+    }
+    if (error) {
+        return <div className="text-red-500">Error loading chat history: {error.message}</div>;
+    }
 
     return (
         <div className={className}>
             <div className="flex flex-col gap-4 items-end">
-                {/* {selectedSubtopic?.topics.map((topic, index) => (
-                <></>
-            ))} */}
 
-                <div className="max-w-2xl p-4 rounded-lg dark:bg-white/10 bg-black/10">
-                    Explain me python memory management in detail.
-                </div>
-
-                <article className="markdown-body w-full p-4 rounded-lg" dangerouslySetInnerHTML={{
-                    __html: marked.use(markedCodePreview()).parse(`Sure — let’s break down Python memory management clearly, without code:
-
----
-
-## 📌 Python Memory Management — Plain Explanation:
-
-1. **Automatic Memory Management**
-   Python handles most memory allocation and deallocation automatically, so developers don’t manually free memory like in C/C++.
-
-2. **Private Heap Space**
-   All Python objects and data structures are stored in a private heap — a dedicated memory area managed by the Python interpreter.
-
-3. **Memory Manager**
-   Python has an internal memory manager that handles object allocation, memory blocks, and caching mechanisms.
-
-4. **Garbage Collection (GC)**
-   Python uses a garbage collector to automatically reclaim memory by identifying and cleaning up unused objects.
-
-   * It uses **reference counting** (keeping track of how many references point to an object)
-   * And handles **cyclic references** (objects referring to each other) using a cyclic garbage collector.
-
-5. **Reference Counting**
-   Every object has a count of how many variables reference it. When this count drops to zero, the memory can be freed.
-
-6. **Object-specific Allocators**
-   For different object types (like integers, strings, lists), Python has specialized memory allocators to optimize memory use.
-
-7. **Memory Pools (Pymalloc)**
-   Python internally manages small memory requests using a system called **pymalloc**, which reduces system calls and fragmentation by allocating memory in chunks.
-
----
-
-## 📌 Summary:
-
-Python memory management = **automatic allocation + garbage collection** + **private heap + pymalloc**.
-It’s designed to be efficient, safe, and transparent so developers can focus on logic, not memory cleanup.
-
----
-
-Would you like a visual analogy for this too?`)
-                }} />
+                {chatHistory && chatHistory?.results.map((item) => (
+                    <>
+                        <div className="max-w-2/3 p-4 rounded-lg dark:bg-white/10 bg-black/10" dangerouslySetInnerHTML={{
+                            __html: marked.use(markedCodePreview()).parse(item.user_message)
+                        }} />
+                        <article className="markdown-body w-full p-4 rounded-lg" dangerouslySetInnerHTML={{
+                            __html: marked.use(markedCodePreview()).parse(item.llm_response)
+                        }} />
+                    </>
+                ))}
             </div>
         </div>
     );
