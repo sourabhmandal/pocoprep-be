@@ -45,6 +45,7 @@ const envSchema = z.object({
   AUTH_GOOGLE_ID: z.string(),
   AUTH_GOOGLE_SECRET: z.string(),
   NEXT_PUBLIC_API_URL: z.string().url(),
+  GOOGLE_API_KEY: z.string(),
 });
 
 dotenv.config();
