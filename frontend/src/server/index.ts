@@ -1,10 +1,10 @@
 "use server";
 import { env } from "@/server/env"; // Adjust the import path as necessary
-import { demoAppSchema } from "@/server/model"; // Adjust the import path as necessary
+import { pocoprepAppSchema } from "@/server/model"; // Adjust the import path as necessary
 import { drizzle, PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
-let db: PostgresJsDatabase<typeof demoAppSchema>;
+let db: PostgresJsDatabase<typeof pocoprepAppSchema>;
 
 export async function getDb() {
   if (db) return db;
@@ -14,7 +14,7 @@ export async function getDb() {
     console.log("Initializing New database connection...");
 
     db = drizzle(queryClient, {
-      schema: demoAppSchema,
+      schema: pocoprepAppSchema,
       logger: env.NODE_ENV === "production" ? false : true,
     });
   } catch (error) {

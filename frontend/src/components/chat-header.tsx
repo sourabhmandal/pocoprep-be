@@ -1,3 +1,4 @@
+'use client'
 import { NavActions } from "@/components/nav-actions"
 import { Separator } from "@/components/ui/separator"
 import {

@@ -26,13 +26,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { AppSwitcher } from "@/components/AppSwitcher"
+import { useSession } from "@/lib/auth/auth-client"
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   apps: [
     {name: "Interview Preparation", logo: Bot, plan: "Free"},
     {name: "Resume Builder & Career Coaching", logo: Frame, plan: "Pro"},
@@ -53,7 +49,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )

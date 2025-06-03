@@ -1,5 +1,3 @@
-'use client'
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   SidebarInset,
@@ -29,7 +27,3 @@ export default function HomePage() {
 </ErrorBoundary>
   )
 }
-function useFetchRoadmapList(): { isLoading: any; error: any; } {
-  throw new Error("Function not implemented.");
-}
-
