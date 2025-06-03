@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/popover"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ChevronsUpDownIcon } from "lucide-react"
+import { ChevronsUpDownIcon, PaperclipIcon } from "lucide-react"
 import {
     Accordion,
     AccordionContent,

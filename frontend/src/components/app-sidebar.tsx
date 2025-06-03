@@ -35,11 +35,10 @@ const data = {
   },
   apps: [
     {name: "Interview Preparation", logo: Bot, plan: "Free"},
-    {name: "Resume Builder", logo: Frame, plan: "Pro"},
+    {name: "Resume Builder & Career Coaching", logo: Frame, plan: "Pro"},
     {name: "Mock Interviews", logo: Send, plan: "Pro"},
-    {name: "Career Coaching", logo: LifeBuoy, plan: "Pro"},
-    {name: "Job Search", logo: Map, plan: "Free"},
-    {name: "Analytics", logo: PieChart, plan: "Pro"},
+    // {name: "Job Search", logo: Map, plan: "Free"},
+    // {name: "Analytics", logo: PieChart, plan: "Pro"},
     {name: "Settings", logo: Settings2, plan: "Free"},
   ]
 }

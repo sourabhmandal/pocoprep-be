@@ -13,6 +13,7 @@ import {
   LineChart,
   Link,
   MoreHorizontal,
+  PaperclipIcon,
   Settings2,
   Star,
   Trash,
@@ -122,14 +123,17 @@ export function NavActions() {
         <Star />
       </Button>
       <ModeToggle />
-      <Dialog>
+      <Button variant={"ghost"}>
+              <PaperclipIcon className="h-4 w-4" /> Sources
+            </Button>
+      {/* <Dialog>
         <DialogTrigger>
           <Button variant="ghost" size="icon" className="h-7 w-7">
             <Settings2 />
           </Button>
         </DialogTrigger>
         <CommandDialog />
-      </Dialog>
+      </Dialog> */}
       <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button

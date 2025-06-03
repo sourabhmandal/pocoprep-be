@@ -68,9 +68,6 @@ export function ChatInput({ className = "" }: { className?: string }) {
           </Popover>
 
           <div className="flex gap-2">
-            <Button size="icon" variant={"ghost"} onClick={sendMessage}>
-              <PaperclipIcon className="h-4 w-4" />
-            </Button>
             <Button size="icon" onClick={sendMessage} disabled={!input.trim()}>
               <ArrowUp className="h-4 w-4" />
             </Button>
