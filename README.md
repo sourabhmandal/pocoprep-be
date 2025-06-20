@@ -20,9 +20,9 @@ User ➜ Django View ➜ LangChain ➜ Gemini (LLM) or Embedding Model
 
 ## Platform Sneek Peak 
 
-![Home Page](https://raw.githubusercontent.com/sourabhmandal/pocket-prep/refs/heads/main/readme-resources/home-page.png)
+![Home Page](https://raw.githubusercontent.com/sourabhmandal/pocoprep-be/refs/heads/main/readme-resources/home-page.png)
 
-![chat box for topic wise guidance](https://raw.githubusercontent.com/sourabhmandal/pocket-prep/refs/heads/main/readme-resources/screenshot-2.png)
+![chat box for topic wise guidance](https://raw.githubusercontent.com/sourabhmandal/pocoprep-be/refs/heads/main/readme-resources/screenshot-2.png)
 
-![chat box for topic wise guidance](https://raw.githubusercontent.com/sourabhmandal/pocket-prep/refs/heads/main/readme-resources/screenshot-1.png)
+![chat box for topic wise guidance](https://raw.githubusercontent.com/sourabhmandal/pocoprep-be/refs/heads/main/readme-resources/screenshot-1.png)
 
