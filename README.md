@@ -1,6 +1,8 @@
-## Pocket Prep
-
+# Poco prep (Frontend Repository)
 Simple mock interviewer 24/7
+
+This is the backend repo of pocoprep
+Pocoprep frontend (https://github.com/sourabhmandal/pocoprep-fe)
 
 ```
 
